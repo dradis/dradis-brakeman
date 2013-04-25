@@ -1,0 +1,1 @@
+require 'brakeman_upload'
