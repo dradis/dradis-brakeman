@@ -5,12 +5,15 @@ module Dradis::Plugins::Brakeman
     # @returns true if the operation was successful, false otherwise
     def import(params={})
 
+      file_content = File.read( params[:file] )
+
       # Parse the uploaded file into a Ruby Hash
       logger.info { "Parsing Brakeman output from #{ params[:file] }..." }
       data = MultiJson.decode(file_content)
       logger.info { 'Done.' }
 
-      scan_info = "#[Application]#\n#{data['scan_info']['app_path']}\n\n"
+      scan_info = "#[Title]#\nBrakeman scan information\n\n"
+      scan_info << "#[Application]#\n#{data['scan_info']['app_path']}\n\n"
       scan_info << "#[ChecksPerformed]#\n#{data['scan_info']['checks_performed'].join(', ')}\n\n"
       scan_info << "#[BrakemanVersion]#\n#{data['scan_info']['brakeman_version']}\n\n"
 
@@ -25,19 +28,12 @@ module Dradis::Plugins::Brakeman
       data['warnings'].each do |warning|
         logger.info { "* [#{warning['warning_type']}] #{warning['message']}" }
 
-        type = warning['warning_type']
-
-        # Check if this is the first time we've found this warning type
-        if !sorted_warnings.key?(type)
-          # and create a child node to hold any warnings
-          sorted_warnings[type] = @parent.children.find_or_create_by_label(type)
-        end
-
-        node_for_type = sorted_warnings[type]
-
         warning_info =<<EOW
-#[Message]#
+#[Title]#
 #{warning['message']}
+
+#[Type]#
+#{warning['type']}
 
 #[Confidence]#
 #{warning['confidence']}
@@ -52,7 +48,7 @@ bc.. #{warning['code']}
 #{warning['link']}
 EOW
 
-        content_service.create_note text: warning_info
+        content_service.create_issue text: warning_info, id: warning['warning_code']
       end
 
     end
