@@ -1,1 +1,3 @@
-The Dradis Framework [CONTRIBUTING](https://github.com/dradis/dradisframework/tree/master/CONTRIBUTING.md) rules apply to all plugins.
+# Plugin contribution guidelines
+
+See the Dradis Framework's [CONTRIBUTING.md](https://github.com/dradis/dradisframework/blob/master/CONTRIBUTING.md)
