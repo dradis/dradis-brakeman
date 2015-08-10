@@ -12,12 +12,9 @@ module Dradis::Plugins::Brakeman
       data = MultiJson.decode(file_content)
       logger.info { 'Done.' }
 
-      scan_info = "#[Title]#\nBrakeman scan information\n\n"
-      scan_info << "#[Application]#\n#{data['scan_info']['app_path']}\n\n"
-      scan_info << "#[ChecksPerformed]#\n#{data['scan_info']['checks_performed'].join(', ')}\n\n"
-      scan_info << "#[BrakemanVersion]#\n#{data['scan_info']['brakeman_version']}\n\n"
 
       # choose a different parent based on the application path?
+      scan_info = template_service.process_template(template: 'scan_info', data: data['scan_info'])
       content_service.create_note text: scan_info
 
       logger.info { "#{data['warnings'].count} Warnings\n===========" }
@@ -28,26 +25,7 @@ module Dradis::Plugins::Brakeman
       data['warnings'].each do |warning|
         logger.info { "* [#{warning['warning_type']}] #{warning['message']}" }
 
-        warning_info =<<EOW
-#[Title]#
-#{warning['message']}
-
-#[Type]#
-#{warning['type']}
-
-#[Confidence]#
-#{warning['confidence']}
-
-#[Path]#
-#{warning['file']}##{warning['line']}
-
-#[Code]#
-bc.. #{warning['code']}
-
-#[References]#
-#{warning['link']}
-EOW
-
+        warning_info = template_service.process_template(template: 'warning', data: warning)
         content_service.create_issue text: warning_info, id: warning['warning_code']
       end
 
