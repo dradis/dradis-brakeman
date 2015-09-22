@@ -19,9 +19,6 @@ module Dradis::Plugins::Brakeman
 
       logger.info { "#{data['warnings'].count} Warnings\n===========" }
 
-      # Keep a reference to the node holding each warning type
-      sorted_warnings = {}
-
       data['warnings'].each do |warning|
         logger.info { "* [#{warning['warning_type']}] #{warning['message']}" }
 
