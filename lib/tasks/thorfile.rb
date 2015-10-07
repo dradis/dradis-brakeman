@@ -29,6 +29,8 @@ class BrakemanTasks < Thor
     logger.close
   end
 
+  private
+
   def logger
     @logger ||= Logger.new(STDOUT).tap { |l| l.level = Logger::DEBUG }
   end
