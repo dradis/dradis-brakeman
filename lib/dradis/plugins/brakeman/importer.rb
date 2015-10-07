@@ -12,15 +12,17 @@ module Dradis::Plugins::Brakeman
       data = MultiJson.decode(file_content)
       logger.info { 'Done.' }
 
+      unless data.key?("scan_info")
+        logger.error "ERROR: no 'scan_info' field present in the provided "\
+                     "data. Are you sure you uploaded a Brakeman file?"
+        exit(-1)
+      end
 
       # choose a different parent based on the application path?
       scan_info = template_service.process_template(template: 'scan_info', data: data['scan_info'])
       content_service.create_note text: scan_info
 
       logger.info { "#{data['warnings'].count} Warnings\n===========" }
-
-      # Keep a reference to the node holding each warning type
-      sorted_warnings = {}
 
       data['warnings'].each do |warning|
         logger.info { "* [#{warning['warning_type']}] #{warning['message']}" }
