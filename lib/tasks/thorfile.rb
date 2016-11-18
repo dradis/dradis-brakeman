@@ -1,7 +1,6 @@
 class BrakemanTasks < Thor
   include Core::Pro::ProjectScopedTask if defined?(::Core::Pro)
 
-
   namespace "dradis:plugins:brakeman"
 
   desc      "upload FILE", "upload Brakeman results in JSON format"
@@ -10,33 +9,34 @@ class BrakemanTasks < Thor
   def upload(file_path)
     require 'config/environment'
 
+    logger = Logger.new(STDOUT)
+    logger.level = Logger::DEBUG
+
     unless File.exists?(file_path)
       $stderr.puts "** the file [#{file_path}] does not exist"
       exit(-1)
     end
 
-    # Set project scope from the PROJECT_ID env variable:
-    detect_and_set_project_scope if defined?(::Core::Pro)
+    content_service = nil
+    template_service = nil
 
-    plugin = Dradis::Plugins::Brakeman
+    template_service = Dradis::Plugins::TemplateService.new(plugin: Dradis::Plugins::Brakeman)
+    if defined?(Dradis::Pro)
+      detect_and_set_project_scope
+      content_service = Dradis::Pro::Plugins::ContentService.new(plugin: Dradis::Plugins::Brakeman)
+    else
+      content_service = Dradis::Plugins::ContentService.new(plugin: Dradis::Plugins::Brakeman)
+    end
 
-    Dradis::Plugins::Brakeman::Importer.new(
-      logger:           logger,
-      content_service:  service_namespace::ContentService.new(plugin: plugin),
-      template_service: service_namespace::TemplateService.new(plugin: plugin)
-    ).import(file: file_path)
+    importer = Dradis::Plugins::Brakeman::Importer.new(
+                logger: logger,
+       content_service: content_service,
+      template_service: template_service
+    )
+
+    importer.import(file: file_path)
 
     logger.close
-  end
-
-  private
-
-  def logger
-    @logger ||= Logger.new(STDOUT).tap { |l| l.level = Logger::DEBUG }
-  end
-
-  def service_namespace
-    defined?(Dradis::Pro) ? Dradis::Pro::Plugins : Dradis::Plugins
   end
 
 end
