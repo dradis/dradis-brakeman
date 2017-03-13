@@ -18,12 +18,8 @@ class BrakemanTasks < Thor
     end
 
     detect_and_set_project_scope
-    importer = Dradis::Plugins::Brakeman::Importer.new(
-                logger: logger,
-       content_service: content_service,
-      template_service: template_service
-    )
 
+    importer = Dradis::Plugins::Brakeman::Importer.new(logger: logger)
     importer.import(file: file_path)
 
     logger.close
