@@ -2,7 +2,7 @@ module Dradis::Plugins::Brakeman
   class Importer < Dradis::Plugins::Upload::Importer
 
     def self.templates
-      { evidence: '', issue: 'warning' }
+      { issue: 'warning' }
     end
 
     # The framework will call this function if the user selects this plugin from
