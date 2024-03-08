@@ -7,7 +7,7 @@ module Dradis::Plugins::Brakeman
 
     def self.default_mapping
       {
-        'scan-info' => {
+        'scan_info' => {
           'Title' => 'Brakeman scan information',
           'Application' => '{{ brakeman[scan_info.app_path] }}',
           'BrakemanVersion' => '{{ brakeman[scan_info.brakeman_version] }}',
