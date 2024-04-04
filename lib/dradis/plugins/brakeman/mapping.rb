@@ -17,5 +17,37 @@ module Dradis::Plugins::Brakeman
         'References' => '{{ brakeman[warning.link] }}'
       }      
     }.freeze
+
+    SOURCE_FIELDS = {
+      scan_info: [
+        'scan_info.app_path',
+        'scan_info.rails_version',
+        'scan_info.security_warnings',
+        'scan_info.start_time',
+        'scan_info.end_time',
+        'scan_info.duration',
+        'scan_info.number_of_controllers',
+        'scan_info.number_of_models',
+        'scan_info.number_of_templates',
+        'scan_info.ruby_version',
+        'scan_info.brakeman_version'
+      ],
+      warning: [
+        'warning.warning_type',
+        'warning.warning_code',
+        'warning.fingerprint',
+        'warning.message',
+        'warning.file',
+        'warning.line',
+        'warning.link',
+        'warning.code',
+        'warning.render_path',
+        'warning.location_type',
+        'warning.location_class',
+        'warning.location_method',
+        'warning.user_input',
+        'warning.confidence'
+      ]
+    }.freeze
   end
 end
