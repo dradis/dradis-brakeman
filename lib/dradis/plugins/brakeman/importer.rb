@@ -24,7 +24,7 @@ module Dradis::Plugins::Brakeman
       end
 
       # choose a different parent based on the application path?
-      scan_info = template_service.process_template(template: 'scan_info', data: data['scan_info'])
+      scan_info = mapping_service.apply_mapping(source: 'scan_info', data: data['scan_info'])
       content_service.create_note text: scan_info
 
       logger.info { "#{data['warnings'].count} Warnings\n===========" }
@@ -32,7 +32,7 @@ module Dradis::Plugins::Brakeman
       data['warnings'].each do |warning|
         logger.info { "* [#{warning['warning_type']}] #{warning['message']}" }
 
-        warning_info = template_service.process_template(template: 'warning', data: warning)
+        warning_info = mapping_service.apply_mapping(source: 'warning', data: warning)
         content_service.create_issue text: warning_info, id: warning['warning_code']
       end
 

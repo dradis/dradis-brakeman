@@ -7,5 +7,6 @@ end
 
 require 'dradis/plugins/brakeman/engine'
 require 'dradis/plugins/brakeman/field_processor'
+require 'dradis/plugins/brakeman/mapping'
 require 'dradis/plugins/brakeman/importer'
 require 'dradis/plugins/brakeman/version'
